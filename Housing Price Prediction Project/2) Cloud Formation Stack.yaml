@@ -1,0 +1,319 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: AWS CloudFormation which creates the resources for the aws pyspark for glue tutorial 
+### 
+# Parameters for the cloudformation template
+Parameters:
+  S3PySparkBucketName:
+    Type: String
+    Description: Bucket name for the aws tutorial
+  PreFixForGlueNotebookRoleAndPolicy:
+    Type: String
+    Description: Prefix for glue policy and role
+Resources:
+  S3BucketForData:
+    Type: AWS::S3::Bucket
+    Properties: 
+      BucketName: !Ref S3PySparkBucketName
+      Tags:
+      - Key: identifier
+        Value: pySparktutorial
+  ###
+  # Database created for the tables to reside in
+  GlueDatabase:
+    Type: AWS::Glue::Database
+    Properties: 
+      CatalogId: !Ref AWS::AccountId
+      DatabaseInput: 
+        Name: pyspark_tutorial_db
+        Description: "This database contains the tables for the PySpark tutorial"
+  ###
+  # Create the customer table which depends on the GlueDatabase and S3 bucket
+  GlueSchoolTable:
+    DependsOn: 
+    - GlueDatabase
+    - S3BucketForData
+    Type: AWS::Glue::Table
+    Properties: 
+      CatalogId: !Ref AWS::AccountId
+      DatabaseName: pyspark_tutorial_db
+      TableInput: 
+        Name: school
+        Description: Table for school data
+        TableType: EXTERNAL_TABLE
+        StorageDescriptor:
+          Columns:
+          - Name: School code
+            Type: bigint
+          - Name: School Name
+            Type: string
+          - Name: NAME
+            Type: string
+          - Name: ADDRESS
+            Type: string
+          - Name: CITY
+            Type: string
+          - Name: STATE
+            Type: string
+          - Name: ZIP
+            Type: bigint
+          - Name: ZIP4
+            Type: bigint
+          - Name: POPULATION
+            Type: bigint
+          - Name: County
+            Type: string
+          - Name: COUNTYFIPS
+            Type: bigint
+          - Name: LATITUDE
+            Type: bigint
+          - Name: LONGITUDE
+            Type: bigint
+          - Name: LEVEL_
+            Type: string
+          - Name: ENROLLMENT
+            Type: bigint
+          - Name: ST_GRADE
+            Type: string
+          - Name: END_GRADE
+            Type: bigint
+          - Name: DISTRICTID
+            Type: bigint
+          - Name: FT_TEACHER
+            Type: bigint
+          - Name: Statewide Rankå(2019)
+            Type: int
+          - Name: Statewide Rank(2018)
+            Type: int
+          - Name: Statewide Rank(2017)
+            Type: int
+          - Name: Similar Students Rank(2019)
+            Type: int
+          - Name: Similar Students Rank(2018)
+            Type: int
+          - Name: Similar Students Rank(2017)
+            Type: int
+          - Name: College/Career Percent Prepared (2019)
+            Type: int
+          - Name: College/Career Percent Prepared (2018)
+            Type: int
+          - Name: College/Career Percent Prepared (2017)
+            Type: int
+          - Name: Growth(2017-2019)
+            Type: bigint
+          - Name: School District
+            Type: string
+          - Name: Authorizer
+            Type: string
+          - Name: School Type
+            Type: string
+          - Name: Statewide Percentile(2019)
+            Type: int
+          - Name: Statewide Percentile(2018)
+            Type: int
+          - Name: Statewide Percentile(2017)
+            Type: int      
+          Location: !Sub s3://${S3PySparkBucketName}/school
+          InputFormat: org.apache.hadoop.mapred.TextInputFormat
+          OutputFormat: org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat
+          SerdeInfo:
+            Parameters: 
+              field.delim: ","  
+            SerializationLibrary: org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe
+  
+  ###
+  # Create the customer table which depends on the GlueDatabase and S3 bucket
+  GlueZillowTable:
+    DependsOn: 
+    - GlueDatabase
+    - S3BucketForData
+    Type: AWS::Glue::Table
+    Properties: 
+      CatalogId: !Ref AWS::AccountId
+      DatabaseName: pyspark_tutorial_db
+      TableInput: 
+        Name: zillow
+        Description: Table for zillow data
+        TableType: EXTERNAL_TABLE
+        StorageDescriptor:
+          Columns:
+          - Name: zpid
+            Type: bigint
+          - Name: id
+            Type: bigint
+          - Name: providerListingId
+            Type: bigint
+          - Name: imgSrc
+            Type: string
+          - Name: hasImage
+            Type: string
+          - Name: detailUrl
+            Type: string
+          - Name: statusType
+            Type: string
+          - Name: statusText
+            Type: string
+          - Name: countryCurrency
+            Type: string
+          - Name: price
+            Type: string
+          - Name: unformattedPrice
+            Type: bigint
+          - Name: address
+            Type: string
+          - Name: addressStreet
+            Type: string
+          - Name: addressCity
+            Type: string
+          - Name: addressState
+            Type: string
+          - Name: addressZipcode
+            Type: string
+          - Name: isUndisclosedAddress
+            Type: string
+          - Name: beds
+            Type: bigint
+          - Name: baths
+            Type: bigint
+          - Name: areacode
+            Type: string
+          - Name: latLong
+            Type: string
+          - Name: isZillowOwned
+            Type: string
+          - Name: variableData
+            Type: string
+          - Name: badgeInfo
+            Type: string
+          - Name: hdpData
+            Type: string
+          - Name: isSaved
+            Type: string
+          - Name: hasOpenHouse
+            Type: string
+          - Name: openHouseStartDate
+            Type: string
+          - Name: openHouseEndDate
+            Type: string
+          - Name: openHouseDescription
+            Type: string
+          - Name: isUserClaimingOwner
+            Type: string
+          - Name: isUserConfirmedClaim
+            Type: string
+          - Name: pgapt
+            Type: string
+          - Name: sgapt
+            Type: string
+          - Name: estimated annual cost
+            Type: bigint
+          - Name: shouldShowZestimateAsPrice
+            Type: string
+          - Name: has3DModel
+            Type: string
+          - Name: hasVideo
+            Type: string
+          - Name: isHomeRec
+            Type: string
+          - Name: hasAdditionalAttributions
+            Type: string
+          - Name: isFeaturedListing
+            Type: string
+          - Name: availabilityDate
+            Type: string
+          - Name: list
+            Type: string
+          - Name: relaxed
+            Type: string
+          - Name: brokerName
+            Type: string
+          - Name: info6String
+            Type: string
+          - Name: lotAreaString
+            Type: string
+          - Name: builderName
+            Type: string
+          - Name: streetViewMetadataURL
+            Type: string
+          - Name: streetViewURL
+            Type: string
+          - Name: isPropertyResultCDP
+            Type: string
+          - Name: best_deal
+            Type: string
+          - Name: homeInfo_streetAddress
+            Type: string
+          - Name: homeInfo_latitude
+            Type: string
+          - Name: homeInfo_longitude
+            Type: string
+          - Name: homeInfo_price
+            Type: string
+          - Name: homeInfo_homeType
+            Type: string
+          - Name: homeInfo_lotAreaValue
+            Type: string
+          - Name: homeInfo_lotAreaUnit
+            Type: string
+          Location: !Sub s3://${S3PySparkBucketName}/zillow
+          InputFormat: org.apache.hadoop.mapred.TextInputFormat
+          OutputFormat: org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat
+          SerdeInfo:
+            Parameters: 
+              field.delim: ","  
+            SerializationLibrary: org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe
+  
+  ###
+  # Create Role for Glue Notebook and interactive sessions NB this allows access to all glue resources and S3
+  GlueNotebookRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - glue.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      Description: Role for Glue Notebook PySpark tutorial. 
+      MaxSessionDuration: 43200
+      Policies:
+        - PolicyName: !Sub ${PreFixForGlueNotebookRoleAndPolicy}Policy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "glue:*"
+                  - "s3:*"
+                  - "ec2:DescribeVpcEndpoints"
+                  - "ec2:DescribeRouteTables"
+                  - "ec2:CreateNetworkInterface"
+                  - "ec2:DeleteNetworkInterface"
+                  - "ec2:DescribeNetworkInterfaces"
+                  - "ec2:DescribeSecurityGroups"
+                  - "ec2:DescribeSubnets"
+                  - "ec2:DescribeVpcAttribute"
+                  - "iam:ListRolePolicies"
+                  - "iam:GetRole"
+                  - "iam:GetRolePolicy"
+                  - "cloudwatch:PutMetricData"
+                  - "ec2:CreateTags"
+                  - "ec2:DeleteTags"
+                  - "logs:CreateLogGroup"
+                  - "logs:CreateLogStream"
+                  - "logs:PutLogEvents"
+                Resource: "*"
+              - Effect: Allow
+                Action:
+                  - "s3:*"
+                Resource: 
+                  - "arn:aws:s3:::{S3PySparkBucketName}/*"
+                  - "arn:aws:s3:::{S3PySparkBucketName}/"
+              - Effect: Allow
+                Action: 
+                - "iam:GetRole"
+                - "iam:PassRole"
+                Resource: !Sub arn:aws:iam::${AWS::AccountId}:role/${PreFixForGlueNotebookRoleAndPolicy}Role
+      RoleName: !Sub ${PreFixForGlueNotebookRoleAndPolicy}Role
